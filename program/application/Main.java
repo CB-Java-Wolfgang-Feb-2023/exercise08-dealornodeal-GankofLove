@@ -13,33 +13,35 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in); // Eingabescanner
 
     public static void main(String[] args) {
-        initializeCases(); // Initialisiert die Koffer mit Beträgen
-        int playerCaseIndex = choosePlayerCase(); // Lässt den Spieler einen Koffer wählen
-        playerCaseAmount = remainingAmounts.remove(playerCaseIndex - 1); // Entfernt den gewählten Koffer
+        initializeCases(); // Startet das Spiel, indem alle Koffer mit zufälligen Geldbeträgen gefüllt werden
+        int playerCaseIndex = choosePlayerCase(); // Der Spieler wählt seinen persönlichen Koffer aus den verfügbaren aus
+        playerCaseAmount = remainingAmounts.remove(playerCaseIndex - 1); // Speichert und entfernt den Betrag im gewählten Koffer des Spielers aus der Liste der verbleibenden Koffer
 
+        // Beginnt die Runden des Spiels, in denen der Spieler Koffer öffnet und Bankangebote erhält
         for (int round = 1; round <= 9; round++) {
-            int casesToOpen = casesToOpen(round); // Anzahl der in dieser Runde zu öffnenden Koffer
-            System.out.println("Runde " + round + ". Wähle " + casesToOpen + " Koffer zum Öffnen aus.");
+            int casesToOpen = casesToOpen(round); // Entscheidet, wie viele Koffer in dieser Runde geöffnet werden müssen
+            System.out.println("Runde " + round + ". Wähle " + casesToOpen + " Koffer zum Öffnen aus."); // Fordert den Spieler auf, Koffer auszuwählen
             for (int i = 0; i < casesToOpen; i++) {
-                openCase(); // Öffnet die Koffer und zeigt Beträge
+                openCase(); // Führt die Aktion aus, um einen Koffer zu öffnen und den Betrag anzuzeigen.
             }
 
-            double offer = calculateBankOffer(remainingAmounts, round); // Berechnet das Angebot der Bank
-            System.out.printf("Das Angebot der Bank beträgt: $%.2f\n", offer);
-            System.out.print("Deal oder kein Deal? Tippe 'deal', um das Angebot anzunehmen, oder 'no deal', um fortzufahren: ");
-            String dealResponse = scanner.nextLine();
+            double offer = calculateBankOffer(remainingAmounts, round); // Die Bank macht ein Angebot basierend auf den verbleibenden Koffern und der Rundenzahl
+            System.out.printf("Das Angebot der Bank beträgt: $%.2f\n", offer); // Zeigt das Bankangebot an // % = Platzhalter für Variable // .2f = double mit 2 Nachkommastellen
+            System.out.print("Deal oder kein Deal? Tippe 'deal', um das Angebot anzunehmen, oder 'no deal', um fortzufahren: "); // Fragt den Spieler, ob er das Angebot annehmen möchte
+            String dealResponse = scanner.nextLine(); // Liest die Antwort des Spielers ein
             if ("deal".equalsIgnoreCase(dealResponse)) {
-                System.out.printf("Herzlichen Glückwunsch! Du hast $%.2f gewonnen\n", offer);
-                return; // Spielende, wenn der Spieler den Deal annimmt
+                System.out.printf("Herzlichen Glückwunsch! Du hast $%.2f gewonnen\n", offer); // Gratuliert dem Spieler, wenn er das Angebot annimmt
+                return; // Beendet das Spiel, da der Spieler sich für den Deal entschieden hat
             }
 
-            System.out.println("Kein Deal! Es geht weiter..."); // Spiel fortsetzen, wenn kein Deal
+            System.out.println("Kein Deal! Es geht weiter..."); // Das Spiel geht weiter, wenn der Spieler kein Deal wählt
         }
 
-        finalChoice(playerCaseIndex); // Logik für die letzte Runde
+        finalChoice(playerCaseIndex); // Startet die letzte Runde, in der der Spieler sich entscheiden kann, ob er seinen Koffer behalten oder tauschen möchte
 
-        scanner.close(); // Scanner schließen
+        scanner.close(); // Schließt den Scanner am Ende des Spiels, um Ressourcen zu sparen (clean code)
     }
+
 
     private static void initializeCases() {
         cases = new ArrayList<>(Arrays.asList(CaseAmounts.AMOUNTS)); // Koffer mit Beträgen initialisieren
@@ -119,22 +121,22 @@ public class Main {
     // Methode für die letzte Entscheidung im Spiel.
     private static void finalChoice(int playerCaseIndex) {
         System.out.println("Es sind nur noch zwei Koffer übrig.");
-        // Informiert den Spieler über seine Koffernummer und die Nummer des letzten verbleibenden Koffers.
+        // Informiert den Spieler über seine Koffernummer und die Nummer des letzten verbleibenden Koffers
         System.out.printf("Deine Koffernummer: %d und die andere Koffernummer: %d\n", playerCaseIndex, findRemainingCaseIndex());
         System.out.println("Möchtest du die Koffer tauschen? (ja/nein)");
 
-        // Liest die Entscheidung des Spielers, ob die Koffer getauscht werden sollen.
+        // Liest die Entscheidung des Spielers, ob die Koffer getauscht werden sollen
         String input = scanner.next().trim().toLowerCase();
         boolean swap = input.equals("ja");
 
-        // Ermittelt den Index des verbleibenden Koffers basierend auf der Entscheidung des Spielers.
+        // Ermittelt den Index des verbleibenden Koffers basierend auf der Entscheidung des Spielers
         int remainingCaseIndex = swap ? playerCaseIndex : findRemainingCaseIndex();
 
-        // Holt die Beträge aus den beiden Koffern.
+        // Holt die Beträge aus den beiden Koffern
         Double playerCaseAmount = cases.get(playerCaseIndex - 1);
         Double remainingCaseAmount = cases.get(remainingCaseIndex - 1);
 
-        // Falls der Spieler sich entscheidet zu tauschen, aktualisiert diese den Betrag im Koffer des Spielers.
+        // Falls der Spieler sich entscheidet zu tauschen, aktualisiert diese den Betrag im Koffer des Spielers
         if (swap) {
             System.out.println("Du hast dich entschieden, die Koffer zu tauschen.");
             playerCaseAmount = remainingCaseAmount;
@@ -147,27 +149,27 @@ public class Main {
         System.out.println("Danke, dass Sie Deal oder No Deal gespielt haben!");
     }
 
-    // Hilfsmethode, um den Index des letzten verbleibenden Koffers zu finden.
+    // Hilfsmethode, um den Index des letzten verbleibenden Koffers zu finden
     private static int findRemainingCaseIndex() {
-        // Durchsucht die Liste der Koffer und gibt den Index des letzten verbleibenden Koffers zurück.
+        // Durchsucht die Liste der Koffer und gibt den Index des letzten verbleibenden Koffers zurück
         for (int i = 0; i < cases.size(); i++) {
             if (remainingAmounts.contains(cases.get(i))) {
-                return i + 1; // Koffernummern beginnen bei 1, nicht bei 0.
+                return i + 1; // Koffernummern beginnen bei 1, nicht bei 0
             }
         }
-        return -1; // Dies sollte niemals passieren, wenn die Spiellogik korrekt ist.
+        return -1; // Dies sollte niemals passieren, wenn die Spiellogik korrekt ist
     }
 
     // Methode zur Berechnung des Angebots der Bank in jeder Runde.
     private static double calculateBankOffer(ArrayList<Double> remainingAmounts, int round) {
         double total = 0.0;
-        // Addiert alle verbleibenden Beträge, um die Gesamtsumme zu erhalten.
+        // Addiert alle verbleibenden Beträge, um die Gesamtsumme zu erhalten
         for (double amount : remainingAmounts) {
             total += amount;
         }
         // Berechnet den erwarteten Wert der verbleibenden Koffer.
         double expectedValue = total / remainingAmounts.size();
-        // Das Angebot der Bank ist ein Bruchteil des erwarteten Werts, abhängig von der Runde.
+        // Das Angebot der Bank ist ein Bruchteil des erwarteten Werts, abhängig von der Runde
         return (expectedValue * round) / 10.0;
     }
 }
