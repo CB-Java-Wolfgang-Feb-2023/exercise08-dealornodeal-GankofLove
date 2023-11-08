@@ -73,23 +73,28 @@ public class Main {
         int caseNumber = 0;
         boolean validChoice;
         do {
-            validChoice = true;
+            validChoice = true; // Startet mit der Annahme, dass der Spieler eine gültige Wahl trifft
             System.out.println("Wähle einen Koffer zum Öffnen (1-26): ");
             while (!scanner.hasNextInt()) {
+                // Wenn der Spieler keine Zahl eingibt, fordere ihn erneut zur Eingabe auf
                 System.out.println("Das ist keine gültige Koffernummer. Bitte gib eine Zahl zwischen 1 und 26 ein.");
-                scanner.next(); // Ignoriere ungültige Eingabe
+                scanner.next(); // Überspringt die ungültige Eingabe
             }
-            caseNumber = scanner.nextInt();
-            scanner.nextLine(); // Überlese das Zeilenumbruchzeichen
+            caseNumber = scanner.nextInt(); // Liest die Koffernummer vom Spieler
+            scanner.nextLine(); // Übergeht das Zeilenende-Zeichen nach der Zahleneingabe
+
+            // Überprüft, ob die eingegebene Koffernummer gültig und noch nicht geöffnet wurde
             if (caseNumber < 1 || caseNumber > TOTAL_CASES || !remainingAmounts.contains(cases.get(caseNumber - 1))) {
                 System.out.println("Ungültige Koffernummer oder Koffer bereits geöffnet. Bitte wähle einen anderen Koffer.");
-                validChoice = false;
+                validChoice = false; // Der Spieler muss erneut wählen, da die Eingabe ungültig war
             }
-        } while (!validChoice);
+        } while (!validChoice); // Wiederholt die Schleife, bis der Spieler eine gültige Wahl trifft
 
+        // Entfernt den Betrag aus dem gewählten Koffer und zeigt ihn an
         Double caseAmount = remainingAmounts.remove(remainingAmounts.indexOf(cases.get(caseNumber - 1)));
         System.out.printf("Koffernummer %d enthielt: $%.2f\n", caseNumber, caseAmount);
     }
+
 
     private static int casesToOpen(int round) {
         // Bestimmt die Anzahl zu öffnender Koffer basierend auf der Rundennummer
